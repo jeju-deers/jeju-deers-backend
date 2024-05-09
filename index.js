@@ -10,6 +10,10 @@ connectToDatabase();
 app.post("/signup", signup);
 app.post("/login", login);
 
+app.get("/", (req, res) => {
+  res.send("Welcome to the Home Page!");
+});
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
