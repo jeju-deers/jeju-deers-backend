@@ -7,8 +7,8 @@ const app = express();
 app.use(express.json());
 connectToDatabase();
 
-app.post("/signup", signup);
-app.post("/login", login);
+// app.post("/signup", signup);
+// app.post("/login", login);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Home Page!");
