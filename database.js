@@ -11,8 +11,21 @@ const connectToDatabase = async () => {
 };
 
 const userSchema = new mongoose.Schema({
-  username: { type: String, unique: true },
-  password: String,
+  userType: {
+    type: String,
+    enum: ["player", "coach", "external"],
+    required: true,
+  },
+  username: { type: String, unique: true, required: true },
+  password: { type: String, required: true },
+  name: { type: String, required: true },
+  nickname: String,
+  email: { type: String, required: true, unique: true },
+  school: String,
+  studentId: String,
+  positions: [String],
+  backNumber: String,
 });
+
 const User = mongoose.model("User", userSchema);
 export { connectToDatabase, User };
