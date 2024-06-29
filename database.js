@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     enum: ["player", "coach", "external"],
     required: true,
   },
-  username: { type: String, unique: true, required: true },
+  userId: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   name: { type: String, required: true },
   nickname: String,

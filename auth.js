@@ -7,7 +7,7 @@ const secretKey = "secret";
 const signup = async (req, res) => {
   const {
     userType,
-    username,
+    userId,
     password,
     passwordConfirm,
     name,
@@ -37,18 +37,22 @@ const signup = async (req, res) => {
     // Create a new user instance
     const userFields = {
       userType,
-      username,
+      userId,
       password: hashedPassword,
       name,
       nickname,
       email,
     };
 
-    if (userType === "player" || userType === "coach") {
+    if (userType === "player") {
       userFields.school = school;
       userFields.studentId = studentId;
       userFields.positions = positions;
       userFields.backNumber = backNumber;
+    } else if (userType === "coach") {
+      userFields.school = school;
+      userFields.studentId = studentId;
+      userFields.positions = positions;
     }
 
     user = new User(userFields);
@@ -60,7 +64,7 @@ const signup = async (req, res) => {
     const payload = {
       user: {
         id: user.id,
-        username: user.username,
+        userId: user.userId,
       },
     };
 
@@ -75,18 +79,22 @@ const signup = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  const { username, password } = req.body;
+  const { userId, password } = req.body;
   try {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ userId });
     if (!user) {
-      return res.status(401).json({ error: "Invalid username or password" });
+      return res
+        .status(401)
+        .json({ error: "아이디 혹은 비밀번호가 유효하지 않습니다." });
     }
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
-      return res.status(401).json({ error: "Invalid username or password" });
+      return res
+        .status(401)
+        .json({ error: "아이디 혹은 비밀번호가 유효하지 않습니다." });
     }
     const token = jwt.sign(
-      { userId: user._id, username: user.username },
+      { userId: user._id, userId: user.userId },
       secretKey,
       { expiresIn: "1h" }
     );
