@@ -7,13 +7,14 @@ import { signup, login } from "./auth.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const corsOptions = {
-  origin: "*",
-  methods: ["GET", "POST", "DELETE", "UPDATE"],
-  allowHeaders: "Content-Type, Authorization",
-};
+// const corsOptions = {
+//   origin: "*",
+//   methods: ["GET", "POST", "DELETE", "UPDATE"],
+//   allowHeaders: "Content-Type, Authorization",
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 connectToDatabase();
 
