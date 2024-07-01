@@ -31,5 +31,5 @@ app.post("/signup", signup);
 app.post("/login", login);
 
 app.listen(PORT, () => {
-  console.log(`Server running on PORT ${port}`);
+  console.log(`Server running on PORT ${PORT}`);
 });
