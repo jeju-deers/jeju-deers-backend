@@ -2,21 +2,37 @@
   "name": "jeju-deers-backend",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.6.1",
-    "mongoose": "^8.3.4"
+    "mongoose": "^8.3.4",
+    "nodemon": "^3.1.4"
   },
   "scripts": {
-    "start": "node index.js",
+    "dev": "nodemon",
+    "start": "node build/index.js",
+    "build": "babel src -d build --ignore src/client",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "@babel/cli": "^7.24.8",
+    "@babel/core": "^7.24.9",
+    "@babel/node": "^7.24.8",
+    "@babel/preset-env": "^7.24.8",
+    "webpack": "^5.93.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "babel": {
+    "presets": [
+      "@babel/env"
+    ]
+  }
 }
