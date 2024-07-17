@@ -26,9 +26,14 @@ const signup = async (req, res) => {
 
   try {
     // Check if the user already exists
-    let user = await User.findOne({ email });
-    if (user) {
+    let userEmail = await User.findOne({ email });
+    if (userEmail) {
       return res.status(400).json({ msg: "User already exists" });
+    }
+    // userId 중복제거
+    let userIdDuplicate = await User.findOne({ userId });
+    if (userIdDuplicate) {
+      return res.status(400).json({ msg: "UserId already exists" });
     }
 
     // Hash the password
