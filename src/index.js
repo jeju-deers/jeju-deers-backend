@@ -35,7 +35,7 @@ app.post("/login", login);
 // 회원 정보 요청
 app.get("/users", async (req, res) => {
   try {
-    const users = await User.find({});
+    const users = await User.find({}, "-password"); // 비밀번호 필드 제외
     res.json(users);
     console.log(users);
   } catch (error) {
