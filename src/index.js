@@ -1,9 +1,19 @@
 import express from "express";
 import cors from "cors";
 import { connectToDatabase } from "./models/User.js";
-
+import { bodyParser } from "body-parser";
 import { signup, login } from "./auth.js";
 import { User } from "./models/User.js";
+import {
+  board,
+  boards,
+  createBoard,
+  deleteBoard,
+  updateBoards,
+} from "./Board.js";
+import upload from "./multerConfig.js";
+import { findUserWithId, updateUser, user } from "./user.js";
+import { authenticateToken } from "./sessionCheck.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,7 +32,12 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+// body parser
+// app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.json());
 connectToDatabase();
+// insertSampleData();
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Home Page!");
@@ -33,68 +48,40 @@ app.post("/signup", signup);
 app.post("/login", login);
 
 // 회원 정보 요청
-app.get("/users", async (req, res) => {
-  try {
-    const users = await User.find({}, "-password"); // 비밀번호 필드 제외
-    res.json(users);
-    console.log(users);
-  } catch (error) {
-    res.status(500).json({ message: "Server Error" });
-  }
-});
+app.get("/users", user);
+// 단일 회원 요청
+app.get("/users/:id", authenticateToken, findUserWithId);
 // 회원 정보 수정
-app.put("/users/edit/:id", async (req, res) => {
-  const { id } = req.params;
-  const {
-    userType,
-    userId,
-    password,
-    name,
-    nickname,
-    email,
-    school,
-    studentId,
-    positions,
-    backNumber,
-  } = res.body;
+app.put("/users/edit/:id", authenticateToken, updateUser);
 
-  if (
-    !userType &&
-    !userId &&
-    !name &&
-    !email &&
-    !password &&
-    !nickname &&
-    !school &&
-    !studentId &&
-    !positions &&
-    !backNumber
-  ) {
-    return res.status(400).send("하나의 항목이라도 변경되어야 합니다.");
-  }
-  try {
-    const updateData = {};
-    if (userType) updateData.userType = userType;
-    if (userId) updateData.userId = userId;
-    if (password) updateData.password = password;
-    if (name) updateData.name = name;
-    if (nickname) updateData.nickname = nickname;
-    if (email) updateData.email = email;
-    if (school) updateData.school = school;
-    if (studentId) updateData.studentId = studentId;
-    if (positions) updateData.positions = positions;
-    if (backNumber) updateData.backNumber = backNumber;
-    const updateUser = await User.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
-    if (!updateUser) {
-      return res.status(404).send("사용자를 찾을 수 없습니다.");
-    }
-    res.json(updateUser);
-  } catch (error) {
-    res.status(500).send("Server Error");
-  }
-});
+// 게시판
+
+// 전체 글 조회
+app.get("/boards", boards);
+// 단일 게시판 글 조회
+app.get("board/:id", board);
+// 글쓰기
+app.post(
+  "/boards",
+  authenticateToken,
+  upload.fields([
+    { name: "images", maxCount: 10 },
+    { name: "videos", maxCount: 10 },
+  ]),
+  createBoard
+);
+// 글수정
+app.put(
+  "/boards/:id",
+  authenticateToken,
+  upload.fields([
+    { name: "images", maxCount: 10 },
+    { name: "videos", maxCount: 10 },
+  ]),
+  updateBoards
+);
+// 글삭제
+app.delete("/boards/:id", authenticateToken, deleteBoard);
 
 app.listen(PORT, () => {
   console.log(`Server running on PORT ${PORT}`);

@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { User } from "./models/User.js";
 
 const secretKey = "secret";
-
+/*
 const signup = async (req, res) => {
   const {
     userType,
@@ -82,7 +82,96 @@ const signup = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+*/
 
+const signup = async (req, res) => {
+  const {
+    userType,
+    userId,
+    password,
+    passwordConfirm,
+    name,
+    nickname,
+    email,
+    school,
+    studentId,
+    positions,
+    backNumber,
+    birth,
+    belong,
+    join,
+  } = req.body;
+  console.log(`request ${JSON.stringify(req.body)}`);
+  // Check if password and password confirmation match
+  if (password !== passwordConfirm) {
+    return res.status(400).json({ msg: "Passwords do not match" });
+  }
+
+  try {
+    // Check if the email or userId already exists
+    const existingUser = await User.findOne({ $or: [{ email }, { userId }] });
+    if (existingUser) {
+      if (existingUser.email === email) {
+        return res.status(400).json({ msg: "Email already exists" });
+      }
+      if (existingUser.userId === userId) {
+        return res.status(400).json({ msg: "UserId already exists" });
+      }
+    }
+
+    // Ensure password is provided
+    if (!password) {
+      return res.status(400).json({ msg: "Password is required" });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user instance
+    const userFields = {
+      userType,
+      userId,
+      password: hashedPassword,
+      name,
+      nickname,
+      email,
+      school:
+        userType === "player" || userType === "coach" ? school : undefined,
+      studentId:
+        userType === "player" || userType === "coach" ? studentId : undefined,
+      positions:
+        userType === "player" || userType === "coach" ? positions : undefined,
+      backNumber: userType === "player" ? backNumber : undefined,
+      birth,
+      belong,
+      join,
+    };
+
+    const user = new User(userFields);
+
+    // Save the user to the database
+    await user.save();
+
+    // Generate JWT
+    const payload = {
+      user: {
+        id: user.id,
+        userId: user.userId,
+      },
+    };
+
+    jwt.sign(payload, secretKey, { expiresIn: "1h" }, (err, token) => {
+      if (err) {
+        console.error("JWT signing error:", err);
+        return res.status(500).json({ msg: "Failed to generate token" });
+      }
+      res.json({ token });
+    });
+  } catch (error) {
+    console.error("Server error:", error.message);
+    res.status(500).send("Server error");
+  }
+};
 const login = async (req, res) => {
   const { userId, password } = req.body;
   try {
@@ -103,7 +192,16 @@ const login = async (req, res) => {
       secretKey,
       { expiresIn: "1h" }
     );
-    res.json({ message: "Login successful", token });
+    // 응답 데이터
+    res.json({
+      message: "Login successful",
+      token,
+      user: {
+        userId: user.userId,
+        name: user.name,
+        email: user.email,
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: "Login failed", details: error.message });
   }

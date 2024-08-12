@@ -1,6 +1,5 @@
 import "dotenv/config";
 import mongoose from "mongoose";
-import { sampleUsers } from "../../sampleUser";
 
 const connectToDatabase = async () => {
   try {
@@ -27,29 +26,11 @@ const userSchema = new mongoose.Schema({
   studentId: String,
   positions: [String],
   backNumber: String,
+  birth: String,
+  belong: String,
+  join: String,
 });
 
 const User = mongoose.model("User", userSchema);
-
-const insertSampleData = async () => {
-  try {
-    await connectToDatabase();
-
-    // 데이터베이스에 샘플 데이터가 이미 존재하는지 확인
-    const count = await User.countDocuments();
-    if (count === 0) {
-      await User.insertMany(sampleUsers);
-      console.log("샘플 데이터가 삽입되었습니다.");
-    } else {
-      console.log("데이터베이스에 이미 데이터가 존재합니다.");
-    }
-  } catch (error) {
-    console.error("데이터 삽입 중 오류 발생:", error.message);
-  } finally {
-    mongoose.disconnect();
-  }
-};
-
-insertSampleData();
 
 export { connectToDatabase, User };
