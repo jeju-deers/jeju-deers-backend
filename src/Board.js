@@ -1,7 +1,11 @@
-const Board = require("./models/Board");
-const fs = require("fs");
-const path = require("path");
+import Board from "./models/Board.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
+// __dirname을 ES 모듈에서 사용하기 위한 설정
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // 전체 게시글 조회
 const boards = async (req, res) => {
   try {

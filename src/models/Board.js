@@ -1,6 +1,8 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const BoardSchema = new mongoose.Schema({
+const { Schema } = mongoose;
+
+const BoardSchema = new Schema({
   id: { type: Number, required: true, unique: true },
   title: { type: String, required: true },
   content: { type: String, required: true },
@@ -25,5 +27,6 @@ const BoardSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
+const Board = mongoose.model("Board", BoardSchema);
 
-module.exports = mongoose.model("Board", BoardSchema);
+export default Board;

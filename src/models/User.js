@@ -1,7 +1,6 @@
 import "dotenv/config";
 import mongoose from "mongoose";
-
-const connectToDatabase = async () => {
+export const connectToDatabase = async () => {
   try {
     await mongoose.connect(process.env.DB_URL);
     console.log("Connected to MongoDB");
@@ -31,6 +30,6 @@ const userSchema = new mongoose.Schema({
   join: String,
 });
 
-const User = mongoose.model("User", userSchema);
+export const User = mongoose.model("User", userSchema);
 
-export { connectToDatabase, User };
+// export { connectToDatabase, User };

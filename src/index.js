@@ -1,9 +1,9 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { connectToDatabase } from "./models/User.js";
-import { bodyParser } from "body-parser";
 import { signup, login } from "./auth.js";
-import { User } from "./models/User.js";
+// import { User } from "./models/User.js";
 import {
   board,
   boards,
@@ -33,11 +33,8 @@ app.use(
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-// body parser
-// app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(bodyParser.json());
+
 connectToDatabase();
-// insertSampleData();
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Home Page!");
@@ -59,7 +56,7 @@ app.put("/users/edit/:id", authenticateToken, updateUser);
 // 전체 글 조회
 app.get("/boards", boards);
 // 단일 게시판 글 조회
-app.get("board/:id", board);
+app.get("board/:boardId", board);
 // 글쓰기
 app.post(
   "/boards",
@@ -72,7 +69,7 @@ app.post(
 );
 // 글수정
 app.put(
-  "/boards/:id",
+  "/boards/:boardId",
   authenticateToken,
   upload.fields([
     { name: "images", maxCount: 10 },
@@ -80,8 +77,9 @@ app.put(
   ]),
   updateBoards
 );
+
 // 글삭제
-app.delete("/boards/:id", authenticateToken, deleteBoard);
+app.delete("/boards/:boardId", authenticateToken, deleteBoard);
 
 app.listen(PORT, () => {
   console.log(`Server running on PORT ${PORT}`);
