@@ -13,7 +13,7 @@ export const user = async (req, res) => {
 export const findUserWithId = async (req, res) => {
   const { id } = req.params;
   try {
-    const user = await User.findById(id, "-password");
+    const user = await User.findOne({ userId: id }, "-password");
 
     if (!user) {
       return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });

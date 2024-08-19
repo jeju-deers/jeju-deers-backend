@@ -48,6 +48,7 @@ app.post("/login", login);
 app.get("/users", user);
 // 단일 회원 요청
 app.get("/users/:id", authenticateToken, findUserWithId);
+// app.get("/users/:id", findUserWithId);
 // 회원 정보 수정
 app.put("/users/edit/:id", authenticateToken, updateUser);
 

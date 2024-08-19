@@ -1,8 +1,8 @@
+import "dotenv/config";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "./models/User.js";
 
-const secretKey = "secret";
 /*
 const signup = async (req, res) => {
   const {
@@ -160,13 +160,18 @@ const signup = async (req, res) => {
       },
     };
 
-    jwt.sign(payload, secretKey, { expiresIn: "1h" }, (err, token) => {
-      if (err) {
-        console.error("JWT signing error:", err);
-        return res.status(500).json({ msg: "Failed to generate token" });
+    jwt.sign(
+      payload,
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "1h" },
+      (err, token) => {
+        if (err) {
+          console.error("JWT signing error:", err);
+          return res.status(500).json({ msg: "Failed to generate token" });
+        }
+        res.json({ token });
       }
-      res.json({ token });
-    });
+    );
   } catch (error) {
     console.error("Server error:", error.message);
     res.status(500).send("Server error");
@@ -189,7 +194,7 @@ const login = async (req, res) => {
     }
     const token = jwt.sign(
       { userId: user._id, userId: user.userId },
-      secretKey,
+      process.env.JWT_SECRET_KEY,
       { expiresIn: "1h" }
     );
     // 응답 데이터
