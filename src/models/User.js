@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
   backNumber: String,
   birth: String,
   belong: String,
-  join: String,
+  JoinYear: String,
 });
 
 export const User = mongoose.model("User", userSchema);

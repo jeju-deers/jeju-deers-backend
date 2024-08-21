@@ -99,7 +99,7 @@ const signup = async (req, res) => {
     backNumber,
     birth,
     belong,
-    join,
+    JoinYear,
   } = req.body;
   console.log(`request ${JSON.stringify(req.body)}`);
   // Check if password and password confirmation match
@@ -144,7 +144,7 @@ const signup = async (req, res) => {
       backNumber: userType === "player" ? backNumber : undefined,
       birth,
       belong,
-      join,
+      JoinYear,
     };
 
     const user = new User(userFields);
