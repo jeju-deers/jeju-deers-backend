@@ -99,11 +99,12 @@ const signup = async (req, res) => {
     backNumber,
     birth,
     belong,
-    JoinYear,
+    joinYear,
   } = req.body;
   console.log(`request ${JSON.stringify(req.body)}`);
   // Check if password and password confirmation match
   if (password !== passwordConfirm) {
+    console.log("password 불일치");
     return res.status(400).json({ msg: "Passwords do not match" });
   }
 
@@ -112,15 +113,18 @@ const signup = async (req, res) => {
     const existingUser = await User.findOne({ $or: [{ email }, { userId }] });
     if (existingUser) {
       if (existingUser.email === email) {
+        console.log("이메일중복");
         return res.status(400).json({ msg: "Email already exists" });
       }
       if (existingUser.userId === userId) {
+        console.log("아이디 이미 있어요");
         return res.status(400).json({ msg: "UserId already exists" });
       }
     }
 
     // Ensure password is provided
     if (!password) {
+      console.log("패스워드 필요");
       return res.status(400).json({ msg: "Password is required" });
     }
 
@@ -144,7 +148,7 @@ const signup = async (req, res) => {
       backNumber: userType === "player" ? backNumber : undefined,
       birth,
       belong,
-      JoinYear,
+      joinYear,
     };
 
     const user = new User(userFields);
@@ -178,6 +182,7 @@ const signup = async (req, res) => {
   }
 };
 const login = async (req, res) => {
+  console.log("로그인 성공");
   const { userId, password } = req.body;
   try {
     const user = await User.findOne({ userId });

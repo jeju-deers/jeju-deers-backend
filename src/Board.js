@@ -14,7 +14,8 @@ const boards = async (req, res) => {
 
 // 게시글 조회
 const board = async (req, res) => {
-  const { id } = req.params;
+  // const { id } = req.params;
+  const id = parseInt(req.params.id, 10);
   try {
     const board = await Board.findOneAndUpdate(
       { id },
@@ -33,17 +34,17 @@ const board = async (req, res) => {
 
 // 게시글 작성
 const createBoard = async (req, res) => {
-  const { title, content, owner } = req.body;
+  const { title, content, owner, type } = req.body;
 
   // 파일 처리 with multer
-  const image = req.files["images"]
-    ? req.files["images"].map((file) => file.path)
-    : [];
-  const video = req.files["videos"]
-    ? req.files["videos"].map((file) => file.path)
-    : [];
+  // const image = req.files["images"]
+  //   ? req.files["images"].map((file) => file.path)
+  //   : [];
+  // const video = req.files["videos"]
+  //   ? req.files["videos"].map((file) => file.path)
+  //   : [];
 
-  if (!title || !content || !owner) {
+  if (!title || !content || !owner || !type) {
     return res
       .status(400)
       .json({ error: "Title, content, and owner are required" });
@@ -53,8 +54,9 @@ const createBoard = async (req, res) => {
     title,
     content,
     owner,
-    image,
-    video,
+    type,
+    // image,
+    // video,
   });
 
   try {
@@ -71,12 +73,12 @@ const updateBoards = async (req, res) => {
   const { title, content, owner } = req.body;
 
   // 파일 처리 with multer
-  const image = req.files["images"]
-    ? req.files["images"].map((file) => file.path)
-    : [];
-  const video = req.files["videos"]
-    ? req.files["videos"].map((file) => file.path)
-    : [];
+  // const image = req.files["images"]
+  //   ? req.files["images"].map((file) => file.path)
+  //   : [];
+  // const video = req.files["videos"]
+  //   ? req.files["videos"].map((file) => file.path)
+  //   : [];
 
   if (!title || !content || !owner) {
     return res
@@ -86,7 +88,7 @@ const updateBoards = async (req, res) => {
   try {
     const updateBoard = await Board.findByIdAndUpdate(
       id,
-      { title, content, owner, image, video },
+      { title, content, owner },
       { new: true }
     );
     if (!updateBoard) {
@@ -106,22 +108,22 @@ const deleteBoard = async (req, res) => {
       return res.status(404).json({ error: "Board not Found" });
     }
 
-    board.images.forEach((imagePath) => {
-      const fullPath = path.join(__dirname, "..", imagePath);
-      fs.unlink(fullPath, (error) => {
-        if (error) {
-          console.error(`Failed to delete image at ${fullPath}: ${err}`);
-        }
-      });
-    });
-    board.videos.forEach((videoPath) => {
-      const fullPath = path.join(__dirname, "..", videoPath);
-      fs.unlink(fullPath, (error) => {
-        if (error) {
-          console.error(`Failed to delete video at ${fullPath}: ${err}`);
-        }
-      });
-    });
+    // board.images.forEach((imagePath) => {
+    //   const fullPath = path.join(__dirname, "..", imagePath);
+    //   fs.unlink(fullPath, (error) => {
+    //     if (error) {
+    //       console.error(`Failed to delete image at ${fullPath}: ${err}`);
+    //     }
+    //   });
+    // });
+    // board.videos.forEach((videoPath) => {
+    //   const fullPath = path.join(__dirname, "..", videoPath);
+    //   fs.unlink(fullPath, (error) => {
+    //     if (error) {
+    //       console.error(`Failed to delete video at ${fullPath}: ${err}`);
+    //     }
+    //   });
+    // });
     await Board.findByIdAndDelete(id);
     res.status(200).json({ message: "Board deleted successfully" });
   } catch (error) {

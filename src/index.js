@@ -31,6 +31,7 @@ app.use(
     origin: "*",
   })
 );
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -56,30 +57,30 @@ app.put("/users/edit/:id", authenticateToken, updateUser);
 // 전체 글 조회
 app.get("/boards", boards);
 // 단일 게시판 글 조회
-app.get("board/:boardId", board);
+app.get("/boards/:id", board);
 // 글쓰기
 app.post(
   "/boards",
   authenticateToken,
-  upload.fields([
-    { name: "images", maxCount: 10 },
-    { name: "videos", maxCount: 10 },
-  ]),
+  // upload.fields([
+  //   { name: "images", maxCount: 10 },
+  //   { name: "videos", maxCount: 10 },
+  // ]),
   createBoard
 );
 // 글수정
 app.put(
-  "/boards/:boardId",
+  "/boards/:id",
   authenticateToken,
-  upload.fields([
-    { name: "images", maxCount: 10 },
-    { name: "videos", maxCount: 10 },
-  ]),
+  // upload.fields([
+  //   { name: "images", maxCount: 10 },
+  //   { name: "videos", maxCount: 10 },
+  // ]),
   updateBoards
 );
 
 // 글삭제
-app.delete("/boards/:boardId", authenticateToken, deleteBoard);
+app.delete("/boards/:id", authenticateToken, deleteBoard);
 
 app.listen(PORT, () => {
   console.log(`Server running on PORT ${PORT}`);

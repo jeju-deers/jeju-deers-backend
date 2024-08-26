@@ -3,12 +3,12 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const BoardSchema = new Schema({
-  id: { type: Number, required: true, unique: true },
+  // id: { type: Number, required: true, unique: true },
   title: { type: String, required: true },
   content: { type: String, required: true },
   owner: { type: String, required: true },
-  images: [{ type: String }],
-  videos: [{ type: String }],
+  // images: [{ type: String }],
+  // videos: [{ type: String }],
   type: {
     type: String,
     enum: [
