@@ -1,4 +1,5 @@
 import { User } from "./models/User.js";
+import bcrypt from "bcrypt";
 
 export const user = async (req, res) => {
   try {
@@ -61,36 +62,70 @@ export const updateUser = async (req, res) => {
   ) {
     return res.status(400).send("하나의 항목이라도 변경되어야 합니다.");
   }
-
+  console.log("try catch");
   try {
     const updateData = {};
-    if (userType) updateData.userType = userType;
-    if (userId) updateData.userId = userId;
-    if (password !== undefined) {
-      // 비밀번호가 정의되어 있으면 처리
-      if (password === "") {
-        return res
-          .status(400)
-          .send("비밀번호를 빈 문자열로 설정할 수 없습니다.");
-      }
-      // 비밀번호가 빈 문자열이 아니면 해싱
+    if (userType) {
+      console.log(userType);
+      updateData.userType = userType;
+    }
+    if (userId) {
+      console.log(userId);
+      updateData.userId = userId;
+    }
+    if (password !== undefined && password !== "") {
+      // 비밀번호가 정의되어 있고 빈 문자열이 아닌 경우 해싱
       const hashedPassword = await bcrypt.hash(password, 10);
       updateData.password = hashedPassword;
     }
-    if (name) updateData.name = name;
-    if (nickname) updateData.nickname = nickname;
-    if (email) updateData.email = email;
-    if (school) updateData.school = school;
-    if (studentId) updateData.studentId = studentId;
-    if (positions) updateData.positions = positions;
-    if (backNumber) updateData.backNumber = backNumber;
-    if (birth) updateData.birth = birth;
-    if (belong) updateData.belong = belong;
-    if (joinYear) updateData.joinYear = joinYear;
+    if (name) {
+      updateData.name = name;
+      console.log(name);
+    }
+    if (nickname) {
+      updateData.nickname = nickname;
+      console.log(nickname);
+    }
+    if (email) {
+      updateData.email = email;
+      console.log(email);
+    }
+    if (school) {
+      updateData.school = school;
+      console.log(school);
+    }
+    if (studentId) {
+      updateData.studentId = studentId;
+      console.log(studentId);
+    }
+    if (positions) {
+      updateData.positions = positions;
+      console.log(positions);
+    }
+    if (backNumber) {
+      updateData.backNumber = backNumber;
+      console.log(backNumber);
+    }
+    if (birth) {
+      updateData.birth = birth;
+      console.log(birth);
+    }
+    if (belong) {
+      updateData.belong = belong;
+      console.log(belong);
+    }
+    if (joinYear) {
+      updateData.joinYear = joinYear;
+      console.log(joinYear);
+    }
 
-    const updatedUser = await User.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const updatedUser = await User.findOneAndUpdate(
+      { userId: id },
+      updateData,
+      {
+        new: true,
+      }
+    );
 
     if (!updatedUser) {
       return res.status(404).send("사용자를 찾을 수 없습니다.");
@@ -98,6 +133,7 @@ export const updateUser = async (req, res) => {
 
     res.json(updatedUser);
   } catch (error) {
+    console.error(error);
     res.status(500).send("Server Error");
   }
 };

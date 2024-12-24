@@ -182,7 +182,6 @@ const signup = async (req, res) => {
   }
 };
 const login = async (req, res) => {
-  console.log("로그인 성공");
   const { userId, password } = req.body;
   try {
     const user = await User.findOne({ userId });
@@ -200,7 +199,8 @@ const login = async (req, res) => {
     const token = jwt.sign(
       { userId: user._id, userId: user.userId },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "1h" }
+      // { expiresIn: "1h" }
+      { expiresIn: "3m" }
     );
     // 응답 데이터
     res.json({
@@ -210,8 +210,11 @@ const login = async (req, res) => {
         userId: user.userId,
         name: user.name,
         email: user.email,
+        userType: user.userType,
+        belong: user.belong,
       },
     });
+    console.log("로그인 성공");
   } catch (error) {
     res.status(500).json({ error: "Login failed", details: error.message });
   }

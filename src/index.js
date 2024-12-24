@@ -11,9 +11,16 @@ import {
   deleteBoard,
   updateBoards,
 } from "./Board.js";
+import {
+  createComment,
+  readComments,
+  updateComments,
+  deleteComments,
+} from "./comment.js";
 import upload from "./multerConfig.js";
 import { findUserWithId, updateUser, user } from "./user.js";
 import { authenticateToken } from "./sessionCheck.js";
+const bodyParser = require("body-parser");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,12 +39,15 @@ app.use(
   })
 );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 connectToDatabase();
 
 app.get("/", (req, res) => {
+  console.log("root is Coming");
   res.send("Welcome to the Home Page!");
 });
 
@@ -81,6 +91,18 @@ app.put(
 
 // 글삭제
 app.delete("/boards/:id", authenticateToken, deleteBoard);
+
+// 댓글 생성
+app.post("/boards/:id/comments", authenticateToken, createComment);
+
+// 댓글 조회
+app.get("/boards/:id/comments", authenticateToken, readComments);
+
+// 댓글 수정
+app.put("/comments/:commentId", authenticateToken, updateComments);
+
+// 댓글 삭제
+app.delete("/comments/:commentId", authenticateToken, deleteComments);
 
 app.listen(PORT, () => {
   console.log(`Server running on PORT ${PORT}`);
