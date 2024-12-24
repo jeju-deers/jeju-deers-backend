@@ -1,4 +1,4 @@
-import { Comment } from "./models/comment";
+import Comment from "./models/comment";
 
 export const createComment = async (req, res) => {
   console.log(req.params);
