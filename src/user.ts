@@ -1,32 +1,55 @@
-import { User } from "./models/User.js";
+import { Request, Response } from "express";
+import { User } from "./models/User";
 import bcrypt from "bcrypt";
 
-export const user = async (req, res) => {
+// 사용자 목록 조회
+export const getUsers = async (req: Request, res: Response): Promise<void> => {
   try {
     const users = await User.find({}, "-password"); // 비밀번호 필드 제외
-    res.json(users);
-    //   console.log(users);
+    res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ message: "Server Error" });
+    console.error("Error fetching users:", error);
+    res
+      .status(500)
+      .json({
+        message: "Server Error",
+        details: error instanceof Error ? error.message : String(error),
+      });
   }
 };
 
-export const findUserWithId = async (req, res) => {
+// 사용자 ID로 조회
+export const findUserById = async (
+  req: Request<{ id: string }>,
+  res: Response
+): Promise<void> => {
   const { id } = req.params;
-  console.log(`${id} user 찾기`);
+  console.log(`Fetching user with ID: ${id}`);
+
   try {
     const user = await User.findOne({ userId: id }, "-password");
-
     if (!user) {
-      return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
+      res.status(404).json({ message: "User not found" });
+      return;
     }
-    res.json(user);
+
+    res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ message: "서버 오류" });
+    console.error("Error fetching user by ID:", error);
+    res
+      .status(500)
+      .json({
+        message: "Server Error",
+        details: error instanceof Error ? error.message : String(error),
+      });
   }
 };
 
-export const updateUser = async (req, res) => {
+// 사용자 정보 업데이트
+export const updateUser = async (
+  req: Request<{ id: string }, {}, Partial<UserUpdateBody>>,
+  res: Response
+): Promise<void> => {
   const { id } = req.params;
   const {
     userType,
@@ -44,7 +67,7 @@ export const updateUser = async (req, res) => {
     joinYear,
   } = req.body;
 
-  // 최소 하나의 항목이 변경되었는지 확인
+  // 업데이트할 데이터가 존재하는지 확인
   if (
     !userType &&
     !userId &&
@@ -60,80 +83,65 @@ export const updateUser = async (req, res) => {
     !belong &&
     !joinYear
   ) {
-    return res.status(400).send("하나의 항목이라도 변경되어야 합니다.");
+    res.status(400).json({ message: "At least one field must be updated" });
+    return;
   }
-  console.log("try catch");
+
   try {
-    const updateData = {};
-    if (userType) {
-      console.log(userType);
-      updateData.userType = userType;
+    const updateData: Partial<UserUpdateBody> = {};
+
+    if (userType) updateData.userType = userType;
+    if (userId) updateData.userId = userId;
+    if (password && password !== "") {
+      updateData.password = await bcrypt.hash(password, 10);
     }
-    if (userId) {
-      console.log(userId);
-      updateData.userId = userId;
-    }
-    if (password !== undefined && password !== "") {
-      // 비밀번호가 정의되어 있고 빈 문자열이 아닌 경우 해싱
-      const hashedPassword = await bcrypt.hash(password, 10);
-      updateData.password = hashedPassword;
-    }
-    if (name) {
-      updateData.name = name;
-      console.log(name);
-    }
-    if (nickname) {
-      updateData.nickname = nickname;
-      console.log(nickname);
-    }
-    if (email) {
-      updateData.email = email;
-      console.log(email);
-    }
-    if (school) {
-      updateData.school = school;
-      console.log(school);
-    }
-    if (studentId) {
-      updateData.studentId = studentId;
-      console.log(studentId);
-    }
-    if (positions) {
-      updateData.positions = positions;
-      console.log(positions);
-    }
-    if (backNumber) {
-      updateData.backNumber = backNumber;
-      console.log(backNumber);
-    }
-    if (birth) {
-      updateData.birth = birth;
-      console.log(birth);
-    }
-    if (belong) {
-      updateData.belong = belong;
-      console.log(belong);
-    }
-    if (joinYear) {
-      updateData.joinYear = joinYear;
-      console.log(joinYear);
-    }
+    if (name) updateData.name = name;
+    if (nickname) updateData.nickname = nickname;
+    if (email) updateData.email = email;
+    if (school) updateData.school = school;
+    if (studentId) updateData.studentId = studentId;
+    if (positions) updateData.positions = positions;
+    if (backNumber) updateData.backNumber = backNumber;
+    if (birth) updateData.birth = birth;
+    if (belong) updateData.belong = belong;
+    if (joinYear) updateData.joinYear = joinYear;
 
     const updatedUser = await User.findOneAndUpdate(
       { userId: id },
       updateData,
-      {
-        new: true,
-      }
+      { new: true }
     );
 
     if (!updatedUser) {
-      return res.status(404).send("사용자를 찾을 수 없습니다.");
+      res.status(404).json({ message: "User not found" });
+      return;
     }
 
-    res.json(updatedUser);
+    res.status(200).json(updatedUser);
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
+    console.error("Error updating user:", error);
+    res
+      .status(500)
+      .json({
+        message: "Server Error",
+        details: error instanceof Error ? error.message : String(error),
+      });
   }
 };
+
+// 타입 정의
+interface UserUpdateBody {
+  userType?: string;
+  userId?: string;
+  password?: string;
+  name?: string;
+  nickname?: string;
+  email?: string;
+  school?: string;
+  studentId?: string;
+  positions?: string[];
+  backNumber?: string;
+  birth?: string;
+  belong?: string;
+  joinYear?: string;
+}

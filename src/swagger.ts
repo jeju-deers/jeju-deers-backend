@@ -12,16 +12,20 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:3000",
-        description: "Development server",
+        url: "https://jeju-deers-backend.fly.dev/",
+        description: "Published server",
+      },
+      {
+        url: "http://localhost:3000", // 개발 서버 URL
+        description: "Development Server",
       },
     ],
   },
-  apis: ["src/**/*.ts"], // TypeScript 파일에서 API 주석 검색
+  apis: ["./src/**/*.ts"], // 경로 확인
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
-
+console.log("Swagger Spec:", swaggerSpec);
 export const setupSwagger = (app: Express): void => {
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 };

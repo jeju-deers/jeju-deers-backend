@@ -1,109 +1,41 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { connectToDatabase } from "./models/User.js";
-import { signup, login } from "./auth.js";
-// import { User } from "./models/User.js";
-import {
-  board,
-  boards,
-  createBoard,
-  deleteBoard,
-  updateBoards,
-} from "./Board.js";
-import {
-  createComment,
-  readComments,
-  updateComments,
-  deleteComments,
-} from "./comment.js";
-import upload from "./multerConfig.js";
-import { findUserWithId, updateUser, user } from "./user.js";
-import { authenticateToken } from "./sessionCheck.js";
-const bodyParser = require("body-parser");
+import { connectToDatabase } from "./models/User";
+import authRoutes from "./routes/authRoutes";
+import userRoutes from "./routes/userRoutes";
+import boardRoutes from "./routes/boardRoutes";
+import commentRoutes from "./routes/commentRoutes";
+import { setupSwagger } from "./swagger"; // Swagger 설정 파일 import
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// const corsOptions = {
-//   origin: "*",
-//   methods: ["GET", "POST", "DELETE", "UPDATE"],
-//   allowHeaders: "Content-Type, Authorization",
-// };
+// 미들웨어 설정
+app.use(cors({ origin: "*" }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-// app.use(cors(corsOptions));
-// app.use(cors());
-app.use(
-  cors({
-    origin: "*",
-  })
-);
-
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-
+// 데이터베이스 연결
 connectToDatabase();
 
+// 기본 라우트
 app.get("/", (req, res) => {
-  console.log("root is Coming");
+  console.log("Root is accessed");
   res.send("Welcome to the Home Page!");
 });
 
-// 로그인, 회원가입
-app.post("/signup", signup);
-app.post("/login", login);
+// 라우트 설정
+app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
+app.use("/boards", boardRoutes);
+app.use("/comments", commentRoutes);
 
-// 회원 정보 요청
-app.get("/users", user);
-// 단일 회원 요청
-app.get("/users/:id", authenticateToken, findUserWithId);
-// 회원 정보 수정
-app.put("/users/edit/:id", authenticateToken, updateUser);
+console.log("Initializing Swagger...");
+setupSwagger(app);
+console.log("Swagger setup completed.");
 
-// 게시판
-
-// 전체 글 조회
-app.get("/boards", boards);
-// 단일 게시판 글 조회
-app.get("/boards/:id", board);
-// 글쓰기
-app.post(
-  "/boards",
-  authenticateToken,
-  // upload.fields([
-  //   { name: "images", maxCount: 10 },
-  //   { name: "videos", maxCount: 10 },
-  // ]),
-  createBoard
-);
-// 글수정
-app.put(
-  "/boards/:id",
-  authenticateToken,
-  // upload.fields([
-  //   { name: "images", maxCount: 10 },
-  //   { name: "videos", maxCount: 10 },
-  // ]),
-  updateBoards
-);
-
-// 글삭제
-app.delete("/boards/:id", authenticateToken, deleteBoard);
-
-// 댓글 생성
-app.post("/boards/:id/comments", authenticateToken, createComment);
-
-// 댓글 조회
-app.get("/boards/:id/comments", authenticateToken, readComments);
-
-// 댓글 수정
-app.put("/comments/:commentId", authenticateToken, updateComments);
-
-// 댓글 삭제
-app.delete("/comments/:commentId", authenticateToken, deleteComments);
-
+// 서버 시작
 app.listen(PORT, () => {
   console.log(`Server running on PORT ${PORT}`);
 });
