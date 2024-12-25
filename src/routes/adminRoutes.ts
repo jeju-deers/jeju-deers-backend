@@ -1,3 +1,10 @@
+/**
+ * @swagger
+ * tags:
+ *   name: Admin
+ *   description: API for admin management and operations
+ */
+
 import express from "express";
 import {
   deleteUsers,
@@ -12,6 +19,8 @@ const router = express.Router();
  * @swagger
  * /admin/dashboard:
  *   get:
+ *     tags:
+ *       - Admin
  *     summary: Get admin dashboard
  *     description: Fetch the admin dashboard details, including system statistics and recent activity.
  *     responses:
@@ -48,6 +57,8 @@ router.get("/dashboard", getAdminDashboard);
  * @swagger
  * /admin/users:
  *   get:
+ *     tags:
+ *       - Admin
  *     summary: Get admin user list
  *     description: Fetch a list of all users for admin purposes, including their full information.
  *     parameters:
@@ -101,6 +112,8 @@ router.get("/users", getAdminUsers);
  * @swagger
  * /admin/users:
  *   delete:
+ *     tags:
+ *       - Admin
  *     summary: Delete selected users
  *     description: Delete multiple users based on their IDs.
  *     requestBody:
@@ -129,6 +142,8 @@ router.delete("/users", deleteUsers);
  * @swagger
  * /admin/users/{id}:
  *   put:
+ *     tags:
+ *       - Admin
  *     summary: Update a user's information
  *     description: Update the information of a specific user including belong, role, permission, name, nickname, email, school, studentId, and positions.
  *     parameters:
@@ -185,4 +200,5 @@ router.delete("/users", deleteUsers);
  *         description: Server error.
  */
 router.put("/users/:id", updateUser);
+
 export default router;
