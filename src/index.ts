@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import boardRoutes from "./routes/boardRoutes";
 import commentRoutes from "./routes/commentRoutes";
+import adminRoutes from "./routes/adminRoutes";
 import { setupSwagger } from "./swagger"; // Swagger 설정 파일 import
 
 const app = express();
@@ -30,10 +31,9 @@ app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/boards", boardRoutes);
 app.use("/comments", commentRoutes);
+app.use("/admin", adminRoutes);
 
-console.log("Initializing Swagger...");
 setupSwagger(app);
-console.log("Swagger setup completed.");
 
 // 서버 시작
 app.listen(PORT, () => {
