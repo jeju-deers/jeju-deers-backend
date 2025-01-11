@@ -7,6 +7,7 @@ import userRoutes from "./routes/userRoutes";
 import boardRoutes from "./routes/boardRoutes";
 import commentRoutes from "./routes/commentRoutes";
 import adminRoutes from "./routes/adminRoutes";
+import gameScheduleRoutes from "./routes/gameScheduleRoutes";
 import { setupSwagger } from "./swagger"; // Swagger 설정 파일 import
 
 const app = express();
@@ -22,7 +23,6 @@ connectToDatabase();
 
 // 기본 라우트
 app.get("/", (req, res) => {
-  console.log("Root is accessed");
   res.send("Welcome to the Home Page!");
 });
 
@@ -32,6 +32,7 @@ app.use("/users", userRoutes);
 app.use("/boards", boardRoutes);
 app.use("/comments", commentRoutes);
 app.use("/admin", adminRoutes);
+app.use("/game-schedules", gameScheduleRoutes);
 
 setupSwagger(app);
 
