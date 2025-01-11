@@ -1,19 +1,20 @@
-/**
- * @swagger
- * tags:
- *   name: Admin
- *   description: API for admin management and operations
- */
-
 import express from "express";
 import {
   deleteUsers,
   getAdminDashboard,
   getAdminUsers,
   updateUser,
+  getUserDetails,
 } from "../admin";
 
 const router = express.Router();
+
+/**
+ * @swagger
+ * tags:
+ *   name: Admin
+ *   description: API for admin management and operations
+ */
 
 /**
  * @swagger
@@ -100,6 +101,9 @@ router.get("/dashboard", getAdminDashboard);
  *                     type: string
  *                   permission:
  *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
  *                   updatedAt:
  *                     type: string
  *                     format: date-time
@@ -141,6 +145,66 @@ router.delete("/users", deleteUsers);
 /**
  * @swagger
  * /admin/users/{id}:
+ *   get:
+ *     tags:
+ *       - Admin
+ *     summary: Get user details
+ *     description: Fetch the full details of a specific user by userId.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The userId of the user.
+ *     responses:
+ *       200:
+ *         description: Successful response with user details.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 userId:
+ *                   type: string
+ *                   description: Unique identifier of the user.
+ *                 name:
+ *                   type: string
+ *                   description: Full name of the user.
+ *                 belong:
+ *                   type: string
+ *                   description: The user's affiliation.
+ *                 userType:
+ *                   type: string
+ *                   description: Type of user (player, coach, external).
+ *                 email:
+ *                   type: string
+ *                   format: email
+ *                 school:
+ *                   type: string
+ *                 studentId:
+ *                   type: string
+ *                 positions:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   description: Array of positions.
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Server error.
+ */
+router.get("/users/:id", getUserDetails);
+
+/**
+ * @swagger
+ * /admin/users/{id}:
  *   put:
  *     tags:
  *       - Admin
@@ -152,7 +216,7 @@ router.delete("/users", deleteUsers);
  *         required: true
  *         schema:
  *           type: string
- *         description: The ID of the user to update.
+ *         description: The userId of the user to update.
  *     requestBody:
  *       required: true
  *       content:

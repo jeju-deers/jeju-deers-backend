@@ -74,6 +74,16 @@ import mongoose, { Schema, Document, Model } from "mongoose";
  *           type: string
  *           description: The year the user joined
  *           example: "2023"
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the user was created
+ *           example: "2023-01-01T00:00:00Z"
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the user was last updated
+ *           example: "2023-01-02T12:00:00Z"
  */
 
 // 데이터베이스 연결 함수
@@ -105,28 +115,33 @@ export interface IUser extends Document {
   birth?: string;
   belong?: string;
   joinYear?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 // User 스키마 정의
-const userSchema: Schema<IUser> = new Schema({
-  userType: {
-    type: String,
-    enum: ["player", "coach", "external"],
-    required: true,
+const userSchema: Schema<IUser> = new Schema(
+  {
+    userType: {
+      type: String,
+      enum: ["player", "coach", "external"],
+      required: true,
+    },
+    userId: { type: String, unique: true, required: true },
+    password: { type: String, required: true },
+    name: { type: String, required: true },
+    nickname: { type: String },
+    email: { type: String, required: true, unique: true },
+    school: { type: String },
+    studentId: { type: String },
+    positions: [{ type: String }],
+    backNumber: { type: String },
+    birth: { type: String },
+    belong: { type: String },
+    joinYear: { type: String },
   },
-  userId: { type: String, unique: true, required: true },
-  password: { type: String, required: true },
-  name: { type: String, required: true },
-  nickname: { type: String },
-  email: { type: String, required: true, unique: true },
-  school: { type: String },
-  studentId: { type: String },
-  positions: [{ type: String }],
-  backNumber: { type: String },
-  birth: { type: String },
-  belong: { type: String },
-  joinYear: { type: String },
-});
+  { timestamps: true } // createdAt과 updatedAt을 자동으로 추가
+);
 
 // User 모델 생성
 export const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);

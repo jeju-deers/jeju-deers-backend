@@ -9,7 +9,6 @@ export const getAdminDashboard = async (
   res: Response
 ): Promise<void> => {
   try {
-    // Example: Fetching dashboard data
     const userCount = await User.countDocuments();
     const latestUsers = await User.find({}, "-password").sort({
       createdAt: -1,
@@ -48,15 +47,24 @@ export const getAdminUsers = async (
       });
 
     const query = searchCriteria.length > 0 ? { $or: searchCriteria } : {};
-    const users = await User.find(query, "-password"); // 비밀번호 필드만 제외
+    const users = await User.find(query, "-password");
 
-    res.status(200).json(users);
+    res.status(200).json(
+      users.map((user) => ({
+        ...user.toObject(),
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      }))
+    );
   } catch (error) {
     console.error("Error fetching user data:", error);
     res.status(500).json({ error: "Failed to fetch user data" });
   }
 };
 
+/**
+ * Delete multiple users by userIds
+ */
 export const deleteUsers = async (
   req: Request,
   res: Response
@@ -71,8 +79,7 @@ export const deleteUsers = async (
   }
 
   try {
-    // 삭제 진행
-    const result = await User.deleteMany({ _id: { $in: ids } });
+    const result = await User.deleteMany({ userId: { $in: ids } });
 
     res.status(200).json({
       message: "Users successfully deleted.",
@@ -84,8 +91,11 @@ export const deleteUsers = async (
   }
 };
 
+/**
+ * Update user by userId
+ */
 export const updateUser = async (
-  req: Request,
+  req: Request<{ id: string }>,
   res: Response
 ): Promise<void> => {
   const { id } = req.params;
@@ -118,8 +128,8 @@ export const updateUser = async (
   }
 
   try {
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
+    const updatedUser = await User.findOneAndUpdate(
+      { userId: id },
       {
         belong,
         role,
@@ -139,11 +149,47 @@ export const updateUser = async (
       return;
     }
 
-    res
-      .status(200)
-      .json({ message: "User updated successfully.", user: updatedUser });
+    res.status(200).json({
+      message: "User updated successfully.",
+      user: {
+        ...updatedUser.toObject(),
+        createdAt: updatedUser.createdAt,
+        updatedAt: updatedUser.updatedAt,
+      },
+    });
   } catch (error) {
     console.error("Error updating user:", error);
     res.status(500).json({ error: "Failed to update user." });
+  }
+};
+
+/**
+ * Get user details by userId
+ */
+export const getUserDetails = async (
+  req: Request<{ id: string }>,
+  res: Response
+): Promise<void> => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findOne({ userId: id }, "-password");
+
+    if (!user) {
+      res.status(404).json({ error: "User not found." });
+      return;
+    }
+
+    res.status(200).json({
+      message: "User details fetched successfully.",
+      user: {
+        ...user.toObject(),
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    res.status(500).json({ error: "Failed to fetch user details." });
   }
 };
