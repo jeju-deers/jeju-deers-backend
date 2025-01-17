@@ -62,7 +62,7 @@ export interface IComment extends Document {
 // 댓글 스키마 정의
 const CommentSchema: Schema<IComment> = new Schema({
   postId: { type: Number, required: true }, // Number로 변경
-  commentId: { type: Number, required: true, unique: true },
+  commentId: { type: Number, required: true, default: 1 }, // 기본값 설정
   name: { type: String, required: true },
   belong: { type: String },
   content: { type: String, required: true },

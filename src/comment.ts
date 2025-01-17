@@ -5,42 +5,50 @@ import Board from "./models/Board";
 // 댓글 생성
 export const createComment = async (
   req: Request<
-    { id: string }, // 게시물의 고유 id
-    {}, // 응답의 제네릭 타입 (기본 값 {})
-    { name: string; belong: string; content: string } // 요청 body의 타입
+    { id: string },
+    {},
+    { name: string; belong: string; content: string }
   >,
   res: Response
 ): Promise<void> => {
-  // 반환 타입을 void로 설정
-  const { id } = req.params; // 게시물의 고유 id
+  const { id } = req.params;
   const { name, belong, content } = req.body;
 
   try {
-    const postId = parseInt(id, 10); // String을 Number로 변환
+    const postId = parseInt(id, 10);
 
-    // 댓글 생성 전 게시글 존재 여부 확인
+    if (!postId) {
+      res.status(400).json({ error: "Invalid postId provided" });
+      return;
+    }
+
     const boardExists = await Board.findOne({ id: postId });
     if (!boardExists) {
       res.status(404).json({ error: "해당 게시글을 찾을 수 없습니다." });
-      return; // 핸들러 종료
+      return;
     }
 
-    // 고유한 commentId 생성 로직
+    // 특정 게시물 내에서 마지막 댓글 조회
+    console.log("Looking for comments with postId:", postId);
     const lastComment = await Comment.findOne({ postId }).sort({
       commentId: -1,
     });
-    const newCommentId = lastComment ? lastComment.commentId + 1 : 1;
+    console.log("Last comment retrieved:", lastComment);
 
-    // 새로운 댓글 생성
+    // 게시물 내에서 고유한 commentId 생성
+    const newCommentId = lastComment ? lastComment.commentId + 1 : 1;
+    console.log("New commentId generated:", newCommentId);
+
     const newComment = new Comment({
-      postId, // Number 타입으로 저장
+      postId,
       commentId: newCommentId,
       name,
       belong,
       content,
     });
 
-    // 댓글 저장
+    console.log("New comment before save:", newComment);
+
     await newComment.save();
     res.status(201).json(newComment);
   } catch (error) {
