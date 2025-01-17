@@ -14,10 +14,9 @@ import mongoose, { Schema, Document, Model } from "mongoose";
  *         - content
  *       properties:
  *         postId:
- *           type: string
- *           format: ObjectId
- *           description: The ID of the related board
- *           example: "64aeb4f5e526b7d8b7c0f4c9"
+ *           type: Number
+ *           description: The custom ID of the related board
+ *           example: "custom-board-id-12345"
  *         commentId:
  *           type: number
  *           description: The unique ID of the comment
@@ -48,7 +47,10 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 // 댓글 모델 인터페이스 정의
 export interface IComment extends Document {
-  postId: mongoose.Schema.Types.ObjectId;
+  postId: {
+    type: String; // String으로 변경
+    required: true;
+  };
   commentId: number;
   name: string;
   belong: string;
@@ -59,14 +61,10 @@ export interface IComment extends Document {
 
 // 댓글 스키마 정의
 const CommentSchema: Schema<IComment> = new Schema({
-  postId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: "Board", // 게시물과의 참조
-  },
+  postId: { type: Number, required: true }, // Number로 변경
   commentId: { type: Number, required: true, unique: true },
   name: { type: String, required: true },
-  belong: { type: String, required: true },
+  belong: { type: String },
   content: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

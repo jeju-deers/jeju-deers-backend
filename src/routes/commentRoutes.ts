@@ -1,9 +1,9 @@
 import { Router } from "express";
 import {
-  createComment,
   readComments,
   updateComments,
   deleteComments,
+  createComment,
 } from "../comment";
 import { authenticateToken } from "../sessionCheck";
 
