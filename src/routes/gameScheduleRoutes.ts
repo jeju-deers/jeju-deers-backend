@@ -75,7 +75,7 @@ const router: Router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/GameSchedule'
  */
-router.get("/", authenticateToken, getGameSchedules);
+router.get("/", getGameSchedules);
 
 /**
  * @swagger
@@ -100,7 +100,7 @@ router.get("/", authenticateToken, getGameSchedules);
  *       404:
  *         description: Schedule not found
  */
-router.get("/:id", authenticateToken, getGameSchedule);
+router.get("/:id", getGameSchedule);
 
 /**
  * @swagger

@@ -227,7 +227,7 @@ router.get("/users/:id", getUserDetails);
  *               belong:
  *                 type: string
  *                 description: User's belong.
- *               role:
+ *               userType:
  *                 type: string
  *                 description: User's role.
  *               permission:

@@ -35,12 +35,10 @@ const handleError = (
   statusCode = 500
 ) => {
   console.error(`${message}:`, error);
-  res
-    .status(statusCode)
-    .json({
-      error: message,
-      details: error instanceof Error ? error.message : String(error),
-    });
+  res.status(statusCode).json({
+    error: message,
+    details: error instanceof Error ? error.message : String(error),
+  });
 };
 
 // 회원가입 함수
@@ -149,7 +147,7 @@ export const login = async (
     const token = jwt.sign(
       { userId: user._id, username: user.userId },
       process.env.JWT_SECRET_KEY || "",
-      { expiresIn: "3m" }
+      { expiresIn: "1h" }
     );
 
     res.status(200).json({

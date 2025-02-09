@@ -91,7 +91,7 @@ router.post("/:id", authenticateToken, createComment);
  *       404:
  *         description: Post not found
  */
-router.get("/:id", authenticateToken, readComments);
+router.get("/:id", readComments);
 /**
  * @swagger
  * /comments/{commentId}:

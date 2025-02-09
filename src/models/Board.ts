@@ -32,6 +32,10 @@ import mongoose, { Schema, Document, Model } from "mongoose";
  *           type: number
  *           description: The number of views
  *           example: 123
+ *         belong:
+ *           type: string
+ *           description: The department or group the board belongs to
+ *           example: "Engineering Team"
  *         type:
  *           type: string
  *           description: The type of the board
@@ -67,6 +71,7 @@ export interface IBoard extends Document {
   owner: string;
   views: number;
   type: string;
+  belong?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -78,6 +83,7 @@ const BoardSchema: Schema<IBoard> = new Schema({
   content: { type: String, required: true },
   owner: { type: String, required: true },
   views: { type: Number, default: 0 },
+  belong: { type: String },
   type: {
     type: String,
     enum: [

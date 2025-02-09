@@ -101,7 +101,7 @@ export const updateUser = async (
   const { id } = req.params;
   const {
     belong,
-    role,
+    userType,
     permission,
     name,
     nickname,
@@ -111,36 +111,39 @@ export const updateUser = async (
     positions,
   } = req.body;
 
+  // 'guest'인 경우 school, studentId, positions 필수 입력에서 제외
   if (
     !belong ||
-    !role ||
+    !userType ||
     !permission ||
     !name ||
     !email ||
-    !school ||
-    !studentId ||
-    !positions
+    (userType !== "external" && (!school || !studentId || !positions))
   ) {
-    res
-      .status(400)
-      .json({ error: "All fields except 'nickname' are required." });
+    res.status(400).json({ error: "All required fields must be filled." });
     return;
   }
 
   try {
+    const updateData: any = {
+      belong,
+      userType,
+      permission,
+      name,
+      nickname,
+      email,
+    };
+
+    // userType이 guest가 아닌 경우에만 추가
+    if (userType !== "external") {
+      updateData.school = school;
+      updateData.studentId = studentId;
+      updateData.positions = positions;
+    }
+
     const updatedUser = await User.findOneAndUpdate(
       { userId: id },
-      {
-        belong,
-        role,
-        permission,
-        name,
-        nickname,
-        email,
-        school,
-        studentId,
-        positions,
-      },
+      updateData,
       { new: true }
     );
 

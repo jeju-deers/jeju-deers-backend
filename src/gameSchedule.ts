@@ -10,12 +10,12 @@ export const createGameSchedule = async (
 
   try {
     const newSchedule = new GameSchedule({
-      date,
+      date: new Date(date), // ✅ Date 변환
       location,
       homeTeam,
-      homeScore,
+      homeScore: Number(homeScore), // ✅ Number 변환
       awayTeam,
-      awayScore,
+      awayScore: Number(awayScore), // ✅ Number 변환
     });
 
     const savedSchedule = await newSchedule.save();
@@ -72,12 +72,12 @@ export const updateGameSchedule = async (
     const updatedSchedule = await GameSchedule.findByIdAndUpdate(
       id,
       {
-        date,
+        date: new Date(date), // ✅ Date 변환
         location,
         homeTeam,
-        homeScore,
+        homeScore: Number(homeScore), // ✅ Number 변환
         awayTeam,
-        awayScore,
+        awayScore: Number(awayScore), // ✅ Number 변환
         updatedAt: Date.now(),
       },
       { new: true }

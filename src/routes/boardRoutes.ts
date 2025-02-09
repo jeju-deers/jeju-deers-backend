@@ -70,7 +70,39 @@ router.get("/:id", board);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Board'
+ *             type: object
+ *             required:
+ *               - title
+ *               - content
+ *               - owner
+ *               - type
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: The title of the board
+ *               content:
+ *                 type: string
+ *                 description: The content of the board
+ *               owner:
+ *                 type: string
+ *                 description: The owner of the board
+ *               belong:
+ *                 type: string
+ *                 description: The department or group the board belongs to
+ *               type:
+ *                 type: string
+ *                 description: The type of the board
+ *                 enum:
+ *                   - WORKOUT_SCHEDULES
+ *                   - TEAM_BOARD
+ *                   - COACH_BOARD
+ *                   - STAFF_BOARD
+ *                   - PLAYBOOK
+ *                   - MEMBERSHIP_FEE
+ *                   - NEWS
+ *                   - GUEST_BOARD
+ *                   - MEDIA
+ *                   - SUPPORT
  *     responses:
  *       201:
  *         description: Board created successfully
@@ -102,7 +134,29 @@ router.post("/", authenticateToken, createBoard);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Board'
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *               owner:
+ *                 type: string
+ *               belong:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *                 enum:
+ *                   - WORKOUT_SCHEDULES
+ *                   - TEAM_BOARD
+ *                   - COACH_BOARD
+ *                   - STAFF_BOARD
+ *                   - PLAYBOOK
+ *                   - MEMBERSHIP_FEE
+ *                   - NEWS
+ *                   - GUEST_BOARD
+ *                   - MEDIA
+ *                   - SUPPORT
  *     responses:
  *       200:
  *         description: Board updated successfully
