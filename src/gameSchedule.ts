@@ -5,17 +5,39 @@ import GameSchedule from "./models/GameSchedule";
 export const createGameSchedule = async (
   req: Request,
   res: Response
-): Promise<void> => {
-  const { date, location, homeTeam, homeScore, awayTeam, awayScore } = req.body;
+): Promise<any> => {
+  const {
+    id,
+    date,
+    location,
+    homeTeam,
+    homeScore,
+    awayTeam,
+    awayScore,
+    isEditing,
+  } = req.body; // ✅ id 추가
 
   try {
+    // 필수 값 검증
+    if (!id || !date || !location || !homeTeam || !awayTeam) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // id 중복 검사
+    const existingSchedule = await GameSchedule.findOne({ id });
+    if (existingSchedule) {
+      return res.status(409).json({ error: "ID already exists" }); // ✅ 중복 방지
+    }
+
     const newSchedule = new GameSchedule({
-      date: new Date(date), // ✅ Date 변환
+      id, // ✅ 요청으로 받은 id 저장
+      date: new Date(date),
       location,
       homeTeam,
-      homeScore: Number(homeScore), // ✅ Number 변환
+      homeScore: Number(homeScore),
       awayTeam,
-      awayScore: Number(awayScore), // ✅ Number 변환
+      awayScore: Number(awayScore),
+      isEditing,
     });
 
     const savedSchedule = await newSchedule.save();
@@ -64,28 +86,36 @@ export const getGameSchedule = async (
 export const updateGameSchedule = async (
   req: Request,
   res: Response
-): Promise<void> => {
-  const { id } = req.params;
-  const { date, location, homeTeam, homeScore, awayTeam, awayScore } = req.body;
+): Promise<any> => {
+  const { id } = req.params; // ✅ string 타입으로 받음
+  const {
+    date,
+    location,
+    homeTeam,
+    homeScore,
+    awayTeam,
+    awayScore,
+    isEditing,
+  } = req.body;
 
   try {
-    const updatedSchedule = await GameSchedule.findByIdAndUpdate(
-      id,
+    const updatedSchedule = await GameSchedule.findOneAndUpdate(
+      { id }, // ✅ id로 찾기
       {
-        date: new Date(date), // ✅ Date 변환
+        date: new Date(date),
         location,
         homeTeam,
-        homeScore: Number(homeScore), // ✅ Number 변환
+        homeScore: Number(homeScore),
         awayTeam,
-        awayScore: Number(awayScore), // ✅ Number 변환
+        awayScore: Number(awayScore),
         updatedAt: Date.now(),
+        isEditing,
       },
       { new: true }
     );
 
     if (!updatedSchedule) {
-      res.status(404).json({ error: "Game schedule not found" });
-      return;
+      return res.status(404).json({ error: "Game schedule not found" });
     }
 
     res.status(200).json(updatedSchedule);
@@ -99,14 +129,13 @@ export const updateGameSchedule = async (
 export const deleteGameSchedule = async (
   req: Request,
   res: Response
-): Promise<void> => {
-  const { id } = req.params;
+): Promise<any> => {
+  const { id } = req.params; // ✅ string 타입
 
   try {
-    const deletedSchedule = await GameSchedule.findByIdAndDelete(id);
+    const deletedSchedule = await GameSchedule.findOneAndDelete({ id }); // ✅ id로 삭제
     if (!deletedSchedule) {
-      res.status(404).json({ error: "Game schedule not found" });
-      return;
+      return res.status(404).json({ error: "Game schedule not found" });
     }
 
     res.status(200).json({ message: "Game schedule deleted successfully" });
